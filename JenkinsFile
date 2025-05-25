@@ -1,0 +1,55 @@
+pipeline {
+  agent any
+  environment {
+    EMAIL_RECIPIENT = 'elattarmouad405@gmail.com'
+  }
+  stages {
+    stage('Clone') {
+      steps {
+        sh 'git clone https://github.com/MOUAD010/angular-forms.git'
+      }
+    }
+    stage('Install') {
+      steps {
+        sh 'npm install'
+      }
+    }
+    stage('Build') {
+      steps {
+        sh 'npm run build --prod'
+      }
+    }
+    stage('Lint') {
+      steps {
+        sh 'npm run lint'
+      }
+    }
+    stage('Test') {
+      steps {
+        sh 'npm run test'
+      }
+    }
+    stage('Docker') {
+      steps {
+        echo 'Starting Docker build...'
+        sh 'docker build -t angular-forms .'
+        echo 'Docker image built successfully'
+        sh 'docker images'
+        sh 'docker run -p 8080:80 angular-forms'
+      }
+    }
+  }
+  post {
+    success {
+      mail to: EMAIL_RECIPIENT
+        subject: 'Build successful'
+        body: 'Build successful'
+      }
+    }
+    failure {
+      mail to: EMAIL_RECIPIENT
+      subject: 'Build failed'
+      body: 'Build failed'
+    }
+
+}

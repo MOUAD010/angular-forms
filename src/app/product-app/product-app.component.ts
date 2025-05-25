@@ -1,10 +1,10 @@
 import { Component  } from '@angular/core';
 import { CommonModule , NgIf} from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, FormControl} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl} from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  standalone:true, 
+  standalone:true,
   imports: [ReactiveFormsModule, CommonModule, NgIf],
   templateUrl: './product-app.component.html',
   styleUrl: './product-app.component.css'
@@ -12,7 +12,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 
 export class ProductAppComponent {
 
-  productForm:FormGroup; 
+  productForm:FormGroup;
 
   constructor(private fp : FormBuilder){
     this.productForm = this.fp.group({
@@ -24,7 +24,7 @@ export class ProductAppComponent {
     });
   }
 
-  get f(): { [key : string ] : AbstractControl }{
+  get f(): Record<string, AbstractControl> {
     return this.productForm.controls;
   }
 
@@ -34,15 +34,15 @@ export class ProductAppComponent {
 
   onSubmit(): void{
     if(this.productForm.valid){
-      console.log('Produit Créer :', this.productForm.value); 
+      console.log('Produit Créer :', this.productForm.value);
     }else {
-      console.warn('Erreur lors de la creation du produit'); 
+      console.warn('Erreur lors de la creation du produit');
     }
-    
+
   }
 
   onReset() : void{
-    this.productForm.reset({ 
+    this.productForm.reset({
       quantity : 0
     });
   }
