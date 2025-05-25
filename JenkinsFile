@@ -19,11 +19,11 @@ pipeline {
       }
     }
 
-    stage('Clone') {
-      steps {
-        sh 'git clone https://github.com/MOUAD010/angular-forms.git'
-      }
-    }
+    // stage('Clone') {
+    //   steps {
+    //     sh 'git clone https://github.com/MOUAD010/angular-forms.git'
+    //   }
+    // }
 
     stage('Install') {
       steps {
