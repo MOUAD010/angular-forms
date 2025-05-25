@@ -1,8 +1,10 @@
 pipeline {
   agent any
+
   environment {
     EMAIL_RECIPIENT = 'elattarmouad405@gmail.com'
   }
+
   stages {
     stage('Clone') {
       steps {
@@ -11,45 +13,57 @@ pipeline {
     }
     stage('Install') {
       steps {
-        sh 'npm install'
+        dir('angular-forms') {
+          sh 'npm install'
+        }
       }
     }
     stage('Build') {
       steps {
-        sh 'npm run build --prod'
+        dir('angular-forms') {
+          sh 'npm run build --prod'
+        }
       }
     }
     stage('Lint') {
       steps {
-        sh 'npm run lint'
+        dir('angular-forms') {
+          sh 'npm run lint'
+        }
       }
     }
     stage('Test') {
       steps {
-        sh 'npm run test'
+        dir('angular-forms') {
+          sh 'npm run test --watch=false --browsers=ChromeHeadless'
+        }
       }
     }
     stage('Docker') {
       steps {
-        echo 'Starting Docker build...'
-        sh 'docker build -t angular-forms .'
-        echo 'Docker image built successfully'
-        sh 'docker images'
-        sh 'docker run -p 8080:80 angular-forms'
+        dir('angular-forms') {
+          echo 'Starting Docker build...'
+          sh 'docker build -t angular-forms .'
+          echo 'Docker image built successfully'
+          sh 'docker images'
+          sh 'docker run -d -p 8080:80 angular-forms'
+        }
       }
     }
   }
+
   post {
     success {
-      mail to: EMAIL_RECIPIENT
-        subject: 'Build successful'
-        body: 'Build successful'
-      }
+      mail to: "${EMAIL_RECIPIENT}",
+        subject: "✅ Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+        body: "Build was successful.\n\nJob: ${env.JOB_NAME}\nBuild Number: ${env.BUILD_NUMBER}\nBuild URL: ${env.BUILD_URL}"
+
     }
     failure {
-      mail to: EMAIL_RECIPIENT
-      subject: 'Build failed'
-      body: 'Build failed'
-    }
+      mail to: "${EMAIL_RECIPIENT}",
+        subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+        body: "Build has failed.\n\nJob: ${env.JOB_NAME}\nBuild Number: ${env.BUILD_NUMBER}\nBuild URL: ${env.BUILD_URL}"
 
+    }
+  }
 }
